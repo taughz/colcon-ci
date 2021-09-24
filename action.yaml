@@ -1,0 +1,29 @@
+---
+name: colcon pytest
+description: Continuous integration for colcon repositories
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        echo ::group::Initialize environment
+        VENV=$(mktemp -d)
+        python -m venv $VENV
+        if [ -f $VENV/Scripts/activate ]; then
+          . $VENV/Scripts/activate
+        else
+          . $VENV/bin/activate
+        fi
+        python -m pip install -U pip setuptools
+        echo ::endgroup::
+
+        echo ::group::Install dependencies
+        # Install dependencies, including any 'test' extras
+        python -m pip install -U -e .[test]
+        # Install pytest-cov and use HEAD for any colcon packages
+        python -m pip freeze | { grep ^colcon || :; } | sed 's|\(.*\)==.*|git+https://github.com/colcon/\1.git|g' | xargs python -m pip install -U pytest-cov
+        echo ::endgroup::
+
+        echo ::group::Run tests
+        python -m pytest --cov --cov-branch --cov-report xml:coverage.xml --cov-config setup.cfg
+        echo ::endgroup::
