@@ -18,10 +18,10 @@ runs:
         echo ::endgroup::
 
         echo ::group::Install dependencies
-        # Install dependencies, including any 'test' extras
-        python -m pip install -c $GITHUB_ACTION_PATH/constraints.txt -U -e .[test]
-        # Install pytest-cov and use HEAD for any colcon packages
-        python -m pip freeze | { grep ^colcon || :; } | sed 's|\(.*\)==.*|git+https://github.com/colcon/\1.git|g' | xargs python -m pip install -c $GITHUB_ACTION_PATH/constraints.txt -U pytest-cov
+        # Remove this package from constraints
+        grep -v "^$(python setup.py --name)@" ${GITHUB_ACTION_PATH}/constraints.txt > constraints.txt
+        # Install dependencies, including any 'test' extras, as well as pytest-cov
+        python -m pip install -U -e .[test] pytest-cov -c constraints.txt
         echo ::endgroup::
 
         echo ::group::Run tests
