@@ -12,9 +12,9 @@ jobs:
       strategy: ${{steps.load.outputs.strategy}}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - id: load
-        run: echo "::set-output name=strategy::$(echo $(cat strategy.json))"
+        run: echo "strategy=$(echo $(cat strategy.json))" >> $GITHUB_OUTPUT
 
   canary:
     needs: [setup]
@@ -22,16 +22,16 @@ jobs:
     runs-on: ${{matrix.os}}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # Choose colcon-notification for a canary build. It has colcon
           # dependencies and debian patches, so exercieses a fair amount of the
           # CI action features.
           repository: colcon/colcon-notification
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{matrix.python}}
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: colcon_ci
       - uses: ./colcon_ci/
