@@ -1,0 +1,46 @@
+name: Run tests
+
+on:
+  workflow_call:
+    inputs:
+      codecov:
+        description: 'run codecov action after testing'
+        default: false
+        required: false
+        type: boolean
+      matrix-filter:
+        description: 'jq filter string indicating which configuration(s) should be included'
+        default: '.'
+        required: false
+        type: string
+      repository:
+        description: 'repository to test if different from current'
+        default: ''
+        required: false
+        type: string
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      strategy: ${{ steps.load.outputs.strategy }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: load
+        run: echo "strategy=$(jq -c -M '${{ inputs.matrix-filter }}' strategy.json)" >> $GITHUB_OUTPUT
+
+  pytest:
+    needs: [setup]
+    strategy: ${{ fromJson(needs.setup.outputs.strategy) }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repository }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: cottsay/colcon-ci@main
+      - uses: codecov/codecov-action@v3
+        if: ${{ inputs.codecov }}
