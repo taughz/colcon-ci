@@ -18,6 +18,11 @@ on:
         default: ''
         required: false
         type: string
+      setup-repository:
+        description: 'repository used during job setup'
+        default: 'colcon/ci'
+        required: false
+        type: string
 
 jobs:
   setup:
@@ -26,6 +31,8 @@ jobs:
       strategy: ${{ steps.load.outputs.strategy }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.setup-repository }}
       - id: load
         run: |
           strategy=$(jq -c -M '${{ inputs.matrix-filter }}' strategy.json)

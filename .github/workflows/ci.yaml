@@ -13,3 +13,5 @@ jobs:
       # dependencies and debian patches, so exercieses a fair amount of the
       # CI action features.
       repository: colcon/colcon-notification
+      # Use HEAD to find strategy.json file instead of the tip of colcon/ci
+      setup-repository: ''
