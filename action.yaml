@@ -17,9 +17,14 @@ runs:
         python -m pip install -U pip setuptools
         echo ::endgroup::
 
+        echo ::group::Install package
+        python -m pip install -U -e .[test] --no-deps
+        echo ::endgroup::
+
         echo ::group::Install dependencies
         # Remove this package from constraints
-        grep -v "^$(python setup.py --name)@" ${GITHUB_ACTION_PATH}/constraints.txt > constraints.txt
+        PKG_NAME=$(pip list --local --editable --format json | jq '.[0].name' -r)
+        grep -v "^${PKG_NAME}@" ${GITHUB_ACTION_PATH}/constraints.txt > constraints.txt
         # Install dependencies, including any 'test' extras, as well as pytest-cov
         python -m pip install -U -e .[test] pytest-cov -c constraints.txt
         echo ::endgroup::
