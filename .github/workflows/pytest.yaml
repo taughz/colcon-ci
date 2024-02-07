@@ -27,7 +27,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: load
-        run: echo "strategy=$(jq -c -M '${{ inputs.matrix-filter }}' strategy.json)" >> $GITHUB_OUTPUT
+        run: |
+          strategy=$(jq -c -M '${{ inputs.matrix-filter }}' strategy.json)
+          echo "strategy=${strategy}" >> $GITHUB_OUTPUT
 
   pytest:
     needs: [setup]
