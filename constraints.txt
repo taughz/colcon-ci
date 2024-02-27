@@ -43,4 +43,3 @@ colcon-sanitizer-reports@ git+https://github.com/colcon/colcon-sanitizer-reports
 colcon-spawn-shell@ git+https://github.com/colcon/colcon-spawn-shell.git
 colcon-test-result@ git+https://github.com/colcon/colcon-test-result.git
 colcon-zsh@ git+https://github.com/colcon/colcon-zsh.git
-flake8<6
