@@ -50,6 +50,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - uses: cottsay/colcon-ci@main
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.setup-repository }}
+          path: ./.github-ci-action-repo
+      - uses: ./.github-ci-action-repo
       - uses: codecov/codecov-action@v3
         if: ${{ inputs.codecov }}
