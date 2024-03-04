@@ -23,7 +23,7 @@ runs:
 
         echo ::group::Install dependencies
         # Remove this package from constraints
-        PKG_NAME=$(pip list --local --editable --format json | jq '.[0].name' -r)
+        PKG_NAME=$(pip list -l -e --format json | jq '.[0].name' -r | tr _ -)
         grep -v "^${PKG_NAME}@" ${GITHUB_ACTION_PATH}/constraints.txt > constraints.txt
         # Install dependencies, including any 'test' extras, as well as pytest-cov
         python -m pip install -U -e .[test] pytest-cov -c constraints.txt
