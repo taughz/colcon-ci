@@ -26,24 +26,37 @@ runs:
         PKG_NAME=$(pip list -l -e --format json | jq '.[0].name' -r | tr _ -)
         cp -a ${GITHUB_ACTION_PATH}/constraints{,-heads,-pins}.txt ./
         sed -i.orig "s/^${PKG_NAME}@.*//g" constraints-heads.txt
-        # Install dependencies, including any 'test' extras, as well as pytest-cov
+        # Install dependencies, including 'test' extras, as well as pytest-cov
         python -m pip install -U -e .[test] pytest-cov -c constraints.txt
         echo ::endgroup::
 
         echo ::group::Run tests
-        python -m pytest --cov --cov-branch --cov-report xml:coverage.xml --cov-config setup.cfg
+        python -m pytest \
+          --cov --cov-branch \
+          --cov-report xml:coverage.xml \
+          --cov-config setup.cfg
         echo ::endgroup::
 
         echo ::group::Test publish
         # Run publish-python without uploading the results
         if [ -f publish-python.yaml ]; then
           PUBLISH_PYTHON=$(mktemp -d)
-          git clone https://github.com/dirk-thomas/publish-python.git $PUBLISH_PYTHON
+          pushd $PUBLISH_PYTHON
+          git clone https://github.com/dirk-thomas/publish-python.git .
+          popd
           python -m pip install -U PyYAML wheel
           python $PUBLISH_PYTHON/bin/publish-python wheel:pypi
           if [ ! -z "${{matrix.stdeb-check}}" ]; then
-            sudo apt install -y debhelper dh-python fakeroot python3-all python3-stdeb python3-yaml
-            DEB_BUILD_OPTIONS=nocheck /usr/bin/python3 $PUBLISH_PYTHON/bin/publish-python stdeb:packagecloud
+            sudo apt install \
+              debhelper \
+              dh-python \
+              fakeroot \
+              python3-all \
+              python3-stdeb \
+              python3-yaml \
+              -y
+            DEB_BUILD_OPTIONS=nocheck /usr/bin/python3 \
+              $PUBLISH_PYTHON/bin/publish-python stdeb:packagecloud
           else
             echo "Skipping stdeb test on non-Debian platform..."
           fi

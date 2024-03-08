@@ -1,6 +1,7 @@
+---
 name: Run tests
 
-on:
+on:  # yamllint disable-line rule:truthy
   push:
     branches: ['main']
   pull_request:
@@ -16,3 +17,8 @@ jobs:
       repository: colcon/colcon-notification
       # Use HEAD to find strategy.json file instead of the tip of colcon/ci
       setup-repository: ''
+  yamllint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: yamllint -f github .

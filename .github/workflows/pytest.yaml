@@ -1,6 +1,7 @@
+---
 name: Run tests
 
-on:
+on:  # yamllint disable-line rule:truthy
   workflow_call:
     inputs:
       codecov:
@@ -9,7 +10,8 @@ on:
         required: false
         type: boolean
       matrix-filter:
-        description: 'jq filter string indicating which configuration(s) should be included'
+        description: 'jq filter string indicating which configuration(s)
+          should be included'
         default: '.'
         required: false
         type: string
