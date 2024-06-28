@@ -11,6 +11,7 @@ jobs:
   canary:
     uses: ./.github/workflows/pytest.yaml
     with:
+      codecov: false
       # Choose colcon-notification for a canary build. It has colcon
       # dependencies and debian patches, so exercieses a fair amount of the
       # CI action features.
