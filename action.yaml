@@ -42,7 +42,7 @@ runs:
         if [ -f publish-python.yaml ]; then
           PUBLISH_PYTHON=$(mktemp -d)
           pushd $PUBLISH_PYTHON
-          git clone https://github.com/dirk-thomas/publish-python.git .
+          git clone https://github.com/colcon/publish-python.git .
           popd
           python -m pip install -U PyYAML wheel
           python $PUBLISH_PYTHON/bin/publish-python wheel:pypi
