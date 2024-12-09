@@ -9,6 +9,30 @@ on:  # yamllint disable-line rule:truthy
         default: true
         required: false
         type: boolean
+      strategy-os:
+        description: >-
+          Operating systems to include in the strategy, for example: "macos-latest ubuntu-22.04"
+        default: ''
+        required: false
+        type: string
+      strategy-python:
+        description: >-
+          Python versions to include in the strategy, for example: "3.10 3.11"
+        default: ''
+        required: false
+        type: string
+      strategy-include-py36:
+        description: >-
+          Include old Python 3.6 in the strategy
+        default: true
+        required: false
+        type: boolean
+      strategy-include-stdeb:
+        description: >-
+          Include stdeb in the strategy
+        default: true
+        required: false
+        type: boolean
       matrix-filter:
         description: 'jq filter string indicating which configuration(s)
           should be included'
@@ -41,6 +65,22 @@ jobs:
           repository: ${{ inputs.setup-repository }}
       - id: load
         run: |
+          extra_args=()
+          strat_os=(${{ inputs.strategy-os }})
+          if [ "${#strat_os[@]}" -ne 0 ]; then
+            extra_args+=(--os "${strat_os[@]}")
+          fi
+          strat_py=(${{ inputs.strategy-python }})
+          if [ "${#strat_py[@]}" -ne 0 ]; then
+            extra_args+=(--python "${strat_py[@]}")
+          fi
+          if [ "${{ inputs.strategy-include-py36 }}" = "false" ]; then
+            extra_args+=(--include-py36=no)
+          fi
+          if [ "${{ inputs.strategy-include-stdeb }}" = "false" ]; then
+            extra_args+=(--include-stdeb=no)
+          fi
+          ./genstrat.py ${extra_args[@]} > strategy.json
           strategy=$(jq -c -M '${{ inputs.matrix-filter }}' strategy.json)
           echo "strategy=${strategy}" >> $GITHUB_OUTPUT
 
