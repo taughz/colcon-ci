@@ -46,7 +46,7 @@ on:  # yamllint disable-line rule:truthy
         type: string
       setup-repository:
         description: 'repository used during job setup'
-        default: 'colcon/ci'
+        default: 'taughz/colcon-ci'
         required: false
         type: string
     secrets:
